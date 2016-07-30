@@ -1600,6 +1600,43 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         packetWriter.sendStreamElement(new AckAnswer(clientHandledStanzasCount));
     }
 
+    /*
+     * Mark received stanza ID as already successfully processed.
+     * <p>
+     * This function is called whenever application level routine already completed
+     * the processing(for e.g storing to persistent DB, updating the UI etc).
+     * So this will eventually trigger the ACK packet to the server indicating
+     * that the original messsage is now safe to be deleted from server's offline buffer.
+     * This is important function to ensure the transactional nature of client message
+     * receiption without which, client always have risk to losing the messages.
+     * </p>
+     *
+     * @throws StreamManagementNotEnabledException if Stream Management is not enabled.
+     */
+    public void markHandledStanzaId(String Id) {
+        //if (!isSmEnabled()) {
+        //    throw new StreamManagementException.StreamManagementNotEnabledException();
+        //}
+
+        if (unacknowledgedRcvdStanzas== null)
+            return;
+        for (Map.Entry<String, Integer> E: unacknowledgedRcvdStanzas)
+        {
+            if(E.getKey().equals(Id))
+                E.setValue(1);
+        }
+
+        //check resulting list
+        Iterator<Map.Entry<String, Integer>> iter = unacknowledgedRcvdStanzas.iterator();
+        while(iter.hasNext()){
+            if(iter.next().getValue()!=0){
+                clientHandledStanzasCount = SMUtils.incrementHeight(clientHandledStanzasCount);
+                iter.remove();
+            }else break;
+        }
+    }
+
+
     /**
      * Add a Stanza acknowledged listener.
      * <p>

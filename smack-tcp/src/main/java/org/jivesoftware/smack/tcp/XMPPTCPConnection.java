@@ -119,8 +119,10 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -129,6 +131,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
 
 /**
  * Creates a socket connection to an XMPP server. This is the default connection
@@ -250,6 +254,8 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
      * </p>
      */
     private long clientHandledStanzasCount = 0;
+    private Queue< Map.Entry<String, Integer> > unacknowledgedRcvdStanzas;
+
 
     private BlockingQueue<Stanza> unacknowledgedStanzas;
 
@@ -991,18 +997,34 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                 int eventType = parser.getEventType();
                 while (!done) {
                     switch (eventType) {
-                    case XmlPullParser.START_TAG:
-                        final String name = parser.getName();
-                        switch (name) {
-                        case Message.ELEMENT:
-                        case IQ.IQ_ELEMENT:
-                        case Presence.ELEMENT:
-                            try {
-                                parseAndProcessStanza(parser);
-                            } finally {
-                                clientHandledStanzasCount = SMUtils.incrementHeight(clientHandledStanzasCount);
-                            }
-                            break;
+                        case XmlPullParser.START_TAG:
+                            final String name = parser.getName();
+                            boolean defaultIsRcvHandled = true;
+                            String HandledStanzaId="";
+
+                            switch (name) {
+                                case Message.ELEMENT:
+                                    defaultIsRcvHandled = false;//change this to false
+                                case IQ.IQ_ELEMENT:
+                                case Presence.ELEMENT:
+                                    HandledStanzaId=parser.getAttributeValue(null, "id");
+                                    if(unacknowledgedRcvdStanzas==null)
+                                        unacknowledgedRcvdStanzas = new ConcurrentLinkedQueue<>();
+                                    if(HandledStanzaId!=null)
+                                        unacknowledgedRcvdStanzas.add(new AbstractMap.SimpleEntry<>(HandledStanzaId,0));
+                                    try {
+                                        parseAndProcessStanza(parser);
+                                    } catch(Exception e)
+                                    {
+                                        if(HandledStanzaId!=null)
+                                            markHandledStanzaId(HandledStanzaId);
+                                    }
+                                      finally {
+                                        //clientHandledStanzasCount = SMUtils.incrementHeight(clientHandledStanzasCount);
+                                        if(defaultIsRcvHandled && HandledStanzaId!=null)
+                                            markHandledStanzaId(HandledStanzaId);
+                                    }
+                                    break;
                         case "stream":
                             // We found an opening stream.
                             if ("jabber:client".equals(parser.getNamespace(null))) {
@@ -1095,6 +1117,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                                 smSessionId = null;
                             }
                             clientHandledStanzasCount = 0;
+                            unacknowledgedRcvdStanzas = new ConcurrentLinkedQueue<>();
                             smWasEnabledAtLeastOnce = true;
                             smEnabledSyncPoint.reportSuccess();
                             LOGGER.fine("Stream Management (XEP-198): succesfully enabled");
@@ -1600,7 +1623,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         packetWriter.sendStreamElement(new AckAnswer(clientHandledStanzasCount));
     }
 
-    /*
+    /**
      * Mark received stanza ID as already successfully processed.
      * <p>
      * This function is called whenever application level routine already completed
@@ -1786,6 +1809,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         // respective. No need to reset them here.
         smSessionId = null;
         unacknowledgedStanzas = null;
+        unacknowledgedRcvdStanzas = null;
     }
 
     /**

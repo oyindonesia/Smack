@@ -1004,7 +1004,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
 
                             switch (name) {
                                 case Message.ELEMENT:
-                                    defaultIsRcvHandled = false;//change this to false
+                                    defaultIsRcvHandled = false;
                                 case IQ.IQ_ELEMENT:
                                 case Presence.ELEMENT:
                                     HandledStanzaId=parser.getAttributeValue(null, "id");
@@ -1014,13 +1014,8 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                                         unacknowledgedRcvdStanzas.add(new AbstractMap.SimpleEntry<>(HandledStanzaId,0));
                                     try {
                                         parseAndProcessStanza(parser);
-                                    } catch(Exception e)
-                                    {
-                                        if(HandledStanzaId!=null)
-                                            markHandledStanzaId(HandledStanzaId);
                                     }
                                       finally {
-                                        //clientHandledStanzasCount = SMUtils.incrementHeight(clientHandledStanzasCount);
                                         if(defaultIsRcvHandled && HandledStanzaId!=null)
                                             markHandledStanzaId(HandledStanzaId);
                                     }
@@ -1637,10 +1632,6 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
      * @throws StreamManagementNotEnabledException if Stream Management is not enabled.
      */
     public void markHandledStanzaId(String Id) {
-        //if (!isSmEnabled()) {
-        //    throw new StreamManagementException.StreamManagementNotEnabledException();
-        //}
-
         if (unacknowledgedRcvdStanzas== null)
             return;
         for (Map.Entry<String, Integer> E: unacknowledgedRcvdStanzas)

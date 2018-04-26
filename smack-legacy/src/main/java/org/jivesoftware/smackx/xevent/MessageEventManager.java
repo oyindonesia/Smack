@@ -70,7 +70,7 @@ public class MessageEventManager extends Manager {
     /**
      * Creates a new message event manager.
      *
-     * @param con an XMPPConnection to a XMPP server.
+     * @param connection an XMPPConnection to a XMPP server.
      */
     private MessageEventManager(XMPPConnection connection) {
         super(connection);
@@ -92,6 +92,7 @@ public class MessageEventManager extends Manager {
                     for (String eventType : messageEvent.getEventTypes())
                         fireMessageEventNotificationListeners(
                             message.getFrom(),
+                            message.getStanzaId(),
                             messageEvent.getStanzaId(),
                             eventType.concat("Notification"));
             }
@@ -188,6 +189,7 @@ public class MessageEventManager extends Manager {
     private void fireMessageEventNotificationListeners(
         String from,
         String packetID,
+        String sourceMessageId,
         String methodName) {
         try {
             Method method =
@@ -195,7 +197,7 @@ public class MessageEventManager extends Manager {
                     methodName,
                     new Class[] { String.class, String.class });
             for (MessageEventNotificationListener listener : messageEventNotificationListeners) {
-                method.invoke(listener, new Object[] { from, packetID });
+                method.invoke(listener, new Object[] { from, packetID, sourceMessageId });
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error while invoking MessageEventNotificationListener", e);

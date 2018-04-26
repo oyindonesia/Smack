@@ -192,7 +192,6 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
 
     /**
      * The default bundle and defer callback, used for new connections.
-     * @see bundleAndDeferCallback
      */
     private static BundleAndDeferCallback defaultBundleAndDeferCallback;
 
@@ -267,7 +266,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
     /**
      * This listeners are invoked for every stanza that got acknowledged.
      * <p>
-     * We use a {@link ConccurrentLinkedQueue} here in order to allow the listeners to remove
+     * We use a {@link ConcurrentLinkedQueue} here in order to allow the listeners to remove
      * themselves after they have been invoked.
      * </p>
      */
@@ -988,8 +987,6 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
 
         /**
          * Parse top-level packets in order to process them further.
-         *
-         * @param thread the thread that is being used by the reader to parse incoming packets.
          */
         private void parsePackets() {
             try {
@@ -1230,7 +1227,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
          * True if some preconditions are given to start the bundle and defer mechanism.
          * <p>
          * This will likely get set to true right after the start of the writer thread, because
-         * {@link #nextStreamElement()} will check if {@link queue} is empty, which is probably the case, and then set
+         * {@link #nextStreamElement()} will check if {@link Queue} is empty, which is probably the case, and then set
          * this field to true.
          * </p>
          */

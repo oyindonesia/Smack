@@ -78,23 +78,23 @@ public class MessageEventManagerTest extends SmackTestCase {
         MessageEventManager messageEventManager = new MessageEventManager(getConnection(0));
         messageEventManager
             .addMessageEventNotificationListener(new MessageEventNotificationListener() {
-            public void deliveredNotification(String from, String packetID) {
+            public void deliveredNotification(String from, String packetID, String messageId) {
                 System.out.println("From: " + from + " PacketID: " + packetID + "(delivered)");
             }
 
-            public void displayedNotification(String from, String packetID) {
+            public void displayedNotification(String from, String packetID, String messageId) {
                 System.out.println("From: " + from + " PacketID: " + packetID + "(displayed)");
             }
 
-            public void composingNotification(String from, String packetID) {
+            public void composingNotification(String from, String packetID, String messageId) {
                 System.out.println("From: " + from + " PacketID: " + packetID + "(composing)");
             }
 
-            public void offlineNotification(String from, String packetID) {
+            public void offlineNotification(String from, String packetID, String messageId) {
                 System.out.println("From: " + from + " PacketID: " + packetID + "(offline)");
             }
 
-            public void cancelledNotification(String from, String packetID) {
+            public void cancelledNotification(String from, String packetID, String messageId) {
                 System.out.println("From: " + from + " PacketID: " + packetID + "(cancelled)");
             }
         });
@@ -144,23 +144,23 @@ public class MessageEventManagerTest extends SmackTestCase {
         MessageEventManager messageEventManager1 = new MessageEventManager(getConnection(0));
         messageEventManager1
             .addMessageEventNotificationListener(new MessageEventNotificationListener() {
-            public void deliveredNotification(String from, String packetID) {
+            public void deliveredNotification(String from, String packetID, String messageId) {
                 results.add("deliveredNotification");
             }
 
-            public void displayedNotification(String from, String packetID) {
+            public void displayedNotification(String from, String packetID, String messageId) {
                 results.add("displayedNotification");
             }
 
-            public void composingNotification(String from, String packetID) {
+            public void composingNotification(String from, String packetID, String messageId) {
                 results.add("composingNotification");
             }
 
-            public void offlineNotification(String from, String packetID) {
+            public void offlineNotification(String from, String packetID, String messageId) {
                 results.add("offlineNotification");
             }
 
-            public void cancelledNotification(String from, String packetID) {
+            public void cancelledNotification(String from, String packetID, String messageId) {
                 results.add("cancelledNotification");
             }
         });

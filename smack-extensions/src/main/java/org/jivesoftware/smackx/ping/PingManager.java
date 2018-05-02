@@ -115,6 +115,9 @@ public class PingManager extends Manager {
 
     private ScheduledFuture<?> nextAutomaticPing;
 
+    private final Set<PingListener> pingListeners = Collections
+            .synchronizedSet(new HashSet<PingListener>());
+
     private PingManager(XMPPConnection connection) {
         super(connection);
         executorService = Executors.newSingleThreadScheduledExecutor(
@@ -126,6 +129,7 @@ public class PingManager extends Manager {
             @Override
             public IQ handleIQRequest(IQ iqRequest) {
                 Ping ping = (Ping) iqRequest;
+                invokeAllPingListener(ping.getStanzaId());
                 return ping.getPong();
             }
         });
@@ -408,6 +412,33 @@ public class PingManager extends Manager {
         }
         finally {
             super.finalize();
+        }
+    }
+
+    /**
+     * Register a new PingListener
+     *
+     * @param listener the listener to invoke
+     */
+    public void registerPingListener(PingListener listener) {
+        pingListeners.add(listener);
+    }
+
+    /**
+     * Unregister a PingListener
+     *
+     * @param listener the listener to remove
+     */
+    public void unregisterPingListener(PingListener listener) {
+        pingListeners.remove(listener);
+    }
+
+    /**
+     * Invoke all registered pingListener
+     */
+    private void invokeAllPingListener(String stanzaId) {
+        for (PingListener listener : pingListeners){
+            listener.ping(stanzaId);
         }
     }
 }

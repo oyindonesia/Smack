@@ -567,6 +567,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
     }
 
     private void connectUsingConfiguration() throws IOException, ConnectionException {
+        System.out.println("Trying to connect using configuration");
         List<HostAddress> failedAddresses = populateHostAddresses();
         SocketFactory socketFactory = config.getSocketFactory();
         if (socketFactory == null) {
@@ -632,6 +633,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
      * @throws IOException 
      */
     private void initConnection() throws IOException {
+        System.out.println("initConnection");
         boolean isFirstInitialization = packetReader == null || packetWriter == null;
         compressionHandler = null;
 

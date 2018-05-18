@@ -591,9 +591,11 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                     final InetAddress inetAddress = inetAddresses.next();
                     final String inetAddressAndPort = inetAddress + " at port " + port;
                     LOGGER.finer("Trying to establish TCP connection to " + inetAddressAndPort);
+                    System.out.println("Trying to establish TCP connection to " + inetAddressAndPort);
                     try {
                         socket.connect(new InetSocketAddress(inetAddress, port), config.getConnectTimeout());
                     } catch (Exception e) {
+                        System.out.println("TCP connection failed :" + e.getMessage());
                         if (inetAddresses.hasNext()) {
                             continue innerloop;
                         } else {

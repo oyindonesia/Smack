@@ -586,6 +586,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                 innerloop: while (inetAddresses.hasNext()) {
                     // Create a *new* Socket before every connection attempt, i.e. connect() call, since Sockets are not
                     // re-usable after a failed connection attempt. See also SMACK-724.
+                    System.out.println("Trying to create socket");
                     socket = socketFactory.createSocket();
 
                     final InetAddress inetAddress = inetAddresses.next();

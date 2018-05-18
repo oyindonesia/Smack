@@ -575,8 +575,10 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         for (HostAddress hostAddress : hostAddresses) {
             String host = hostAddress.getFQDN();
             int port = hostAddress.getPort();
+            System.out.println("Trying to create socket");
             socket = socketFactory.createSocket();
             try {
+                System.out.println("Trying to get address by name");
                 Iterator<InetAddress> inetAddresses = Arrays.asList(InetAddress.getAllByName(host)).iterator();
                 if (!inetAddresses.hasNext()) {
                     // This should not happen
@@ -586,7 +588,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                 innerloop: while (inetAddresses.hasNext()) {
                     // Create a *new* Socket before every connection attempt, i.e. connect() call, since Sockets are not
                     // re-usable after a failed connection attempt. See also SMACK-724.
-                    System.out.println("Trying to create socket");
+                    System.out.println("Trying to re-create socket");
                     socket = socketFactory.createSocket();
 
                     final InetAddress inetAddress = inetAddresses.next();

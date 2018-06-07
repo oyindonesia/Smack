@@ -1565,4 +1565,8 @@ public abstract class AbstractXMPPConnection implements XMPPConnection {
     protected final ScheduledFuture<?> schedule(Runnable runnable, long delay, TimeUnit unit) {
         return removeCallbacksService.schedule(runnable, delay, unit);
     }
+
+    public Set<ConnectionListener> getConnectionListeners() {
+        return connectionListeners;
+    }
 }

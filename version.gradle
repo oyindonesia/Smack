@@ -3,6 +3,6 @@ allprojects {
 		shortVersion = '4.1.9'
 		isSnapshot = false
 		jxmppVersion = '0.4.2'
-		smackMinAndroidSdk = 18
+		smackMinAndroidSdk = 8
 	}
 }

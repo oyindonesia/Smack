@@ -218,11 +218,11 @@ public class VCard extends IQ {
     }
 
     public String getNickName() {
-        return otherSimpleFields.get("NICKNAME");
+        return otherSimpleFields.get("FN");
     }
 
     public void setNickName(String nickName) {
-        otherSimpleFields.put("NICKNAME", nickName);
+        otherSimpleFields.put("FN", nickName);
     }
 
     public String getEmailHome() {

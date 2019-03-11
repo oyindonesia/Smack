@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+
 package org.jivesoftware.smackx.vcardtemp.packet;
 
 import java.io.BufferedInputStream;
@@ -40,6 +41,7 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smack.util.stringencoder.Base64;
 import org.jivesoftware.smackx.vcardtemp.VCardManager;
+
 
 /**
  * A VCard class for use with the
